@@ -9,22 +9,18 @@ with open(log_file, "a") as f:
     f.write(f"=== Folder Spy Log Started ===\n")
     f.write(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
 
-class TheSpy(FileSystemEventHandler):
+class SpyHandler(FileSystemEventHandler):
     
     def on_created(self, event):
-        self.log_event("CREATED", event.src_path)
         print(f"Created: {event.src_path}")
 
     def on_deleted(self, event):
-        self.log_event("DELETED", event.src_path)
         print(f"Deleted: {event.src_path}")
     
     def on_modified(self, event):
-        self.log_event("MODIFIED", event.src_path)
         print(f"Modified: {event.src_path}")
 
     def on_moved(self, event):
-        self.log_event("MOVED", event.src_path)
         print(f"Moved: {event.src_path} to {event.dest_path}")
     
     def on_any_event(self, event):
@@ -34,22 +30,24 @@ class TheSpy(FileSystemEventHandler):
         with open(log_file, "a") as f:
             f.write(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} EVENT : {event_type} | PATH: {path}\n")
 
-spy = TheSpy() 
+spy_handler = SpyHandler() 
 
-observer = Observer()
+spy = Observer()
 
 folder_to_watch = "C:/Users/LENOVO/Desktop/SpyFolder"
 
-observer.schedule(spy, folder_to_watch, recursive=True)
+spy.schedule(spy_handler, folder_to_watch, recursive=True)
 
-observer.start()
+spy.start()
+
+print(f"Spy started spying on {folder_to_watch}...")
 
 try:
     while True:
         time.sleep(1)
 
 except KeyboardInterrupt:
-    observer.stop()
+    spy.stop()
     print("Spy stopped spying.")
 
 
